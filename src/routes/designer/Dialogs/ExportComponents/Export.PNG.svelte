@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { tick } from 'svelte';
-	import { saveAs } from 'file-saver';
+	import pkg from 'file-saver';
+	const {saveAs} = pkg;
 
 	import * as d3 from 'd3';
 

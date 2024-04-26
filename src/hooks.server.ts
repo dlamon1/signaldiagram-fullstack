@@ -2,7 +2,7 @@ import type { Handle, HandleServerError } from '@sveltejs/kit';
 import { dbConnect, dbDisconnect } from '$lib/db';
 import { TileTypeModel } from '$lib/models';
 import type { Model } from 'mongoose';
-import type { TileType } from '$lib/types';
+import type { TileType } from '$lib/Types';
 
 if (process.env['ENVIRONMENT'] === 'dev') {
 	console.log('dev mode');
