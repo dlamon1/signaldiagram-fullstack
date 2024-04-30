@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
 	// @ts-nocheck
 
 	import AgGridSvelte from 'ag-grid-svelte';
@@ -42,4 +42,4 @@
 		width: 100vw;
 		height: 100vh;
 	}
-</style>
+</style> -->
