@@ -224,7 +224,7 @@ export class SnapPoint implements SnapPointObj {
 			smallBound = get(screens)[get(currentScreenIndex)].height;
 		}
 
-		this.radius = (smallBound / 12) * this.getSnapPointsParentClass().radiusMultiplier;
+		this.radius = (smallBound / 15) * this.getSnapPointsParentClass().radiusMultiplier;
 
 		if (get(isDrawMode)) {
 			return this.radius * 1.5;
