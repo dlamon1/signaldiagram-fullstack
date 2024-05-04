@@ -32,7 +32,7 @@
 		getFontEmbedCSS(p.node()).then((fontCss) => {
 			var svgString = getSVGString(p.node());
 
-			svgString2Image(svgString, 2 * w, 2 * h, 'png', save); // passes Blob and filesize String to the callback
+			svgString2Image(svgString, 'png', save); // passes Blob and filesize String to the callback
 
 			function save(dataBlob, filesize) {
 				saveAs(dataBlob, $screens[$currentScreenIndex].name + '.png'); // FileSaver.js function
@@ -111,7 +111,7 @@
 				}
 			}
 
-			function svgString2Image(svgString, width, height, format, callback) {
+			function svgString2Image(svgString, format, callback) {
 				var format = format ? format : 'png';
 
 				var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
@@ -119,13 +119,32 @@
 				var canvas = document.createElement('canvas');
 				var context = canvas.getContext('2d');
 
-				canvas.width = width;
-				canvas.height = height;
+				canvas.width = 1920;
+				canvas.height = 1080;
 
 				var image = new Image();
+
 				image.onload = function () {
-					context.clearRect(0, 0, width, height);
-					context.drawImage(image, 0, 0, width, height);
+					// Calculate the aspect ratio of the image
+					const imageAspectRatio = image.width / image.height;
+					const canvasAspectRatio = canvas.width / canvas.height;
+
+					let newWidth, newHeight;
+
+					// If the image's aspect ratio is greater than the canvas's aspect ratio,
+					// the image's width will be the canvas's width, and the height will be scaled accordingly.
+					if (imageAspectRatio > canvasAspectRatio) {
+						newWidth = canvas.width;
+						canvas.height = newWidth / imageAspectRatio;
+					} else {
+						// Otherwise, the image's height will be the canvas's height, and the width will be scaled accordingly.
+						newHeight = canvas.height;
+						canvas.width = newHeight * imageAspectRatio;
+					}
+
+					// Clear the canvas
+					context.clearRect(0, 0, canvas.width, canvas.height);
+					context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
 					canvas.toBlob(function (blob) {
 						var filesize = Math.round(blob.size / 1024) + ' KB';
