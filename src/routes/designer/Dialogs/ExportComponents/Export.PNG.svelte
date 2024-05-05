@@ -6,6 +6,9 @@
 
 	import * as d3 from 'd3';
 
+	const MIRO_MAX_MP = 30000000
+
+
 	import { mode, screens, currentScreenIndex } from '$lib/store.designer';
 
 	const download = async () => {
@@ -111,48 +114,55 @@
 				}
 			}
 
-			function svgString2Image(svgString, format, callback) {
-				var format = format ? format : 'png';
 
-				var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
+			function setMaxDimensions(canvas: HTMLCanvasElement, width: number, height: number) {
+  let scaleRatio = 1;
+  let imageTotalPixels = width * height;
 
-				var canvas = document.createElement('canvas');
-				var context = canvas.getContext('2d');
+  if (imageTotalPixels > MIRO_MAX_MP) {
+    scaleRatio = Math.sqrt(MIRO_MAX_MP / imageTotalPixels);
+  }
 
-				canvas.width = 1920;
-				canvas.height = 1080;
+  canvas.width = width * scaleRatio;
+  canvas.height = height * scaleRatio;
 
-				var image = new Image();
+  return scaleRatio;
+}
 
-				image.onload = function () {
-					// Calculate the aspect ratio of the image
-					const imageAspectRatio = image.width / image.height;
-					const canvasAspectRatio = canvas.width / canvas.height;
+		
+		
+		function svgString2Image(svgString, format, callback) {
+			var format = format ? format : 'png';
 
-					let newWidth, newHeight;
+			var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
 
-					// If the image's aspect ratio is greater than the canvas's aspect ratio,
-					// the image's width will be the canvas's width, and the height will be scaled accordingly.
-					if (imageAspectRatio > canvasAspectRatio) {
-						newWidth = canvas.width;
-						canvas.height = newWidth / imageAspectRatio;
-					} else {
-						// Otherwise, the image's height will be the canvas's height, and the width will be scaled accordingly.
-						newHeight = canvas.height;
-						canvas.width = newHeight * imageAspectRatio;
-					}
+			let canvas = document.createElement('canvas');
+			var context = canvas.getContext('2d');
 
-					// Clear the canvas
-					context.clearRect(0, 0, canvas.width, canvas.height);
-					context.drawImage(image, 0, 0, canvas.width, canvas.height);
+			// Set the desired resolution multiplier (e.g., 2x, 3x, etc.)
+			const resolutionMultiplier = 2;
 
-					canvas.toBlob(function (blob) {
-						var filesize = Math.round(blob.size / 1024) + ' KB';
-						if (callback) callback(blob, filesize);
-					});
-				};
+			let scaleRatio = setMaxDimensions(canvas, w * resolutionMultiplier, h * resolutionMultiplier);
 
-				image.src = imgsrc;
+			var image = new Image();
+
+			image.onload = function () {
+				// Clear the canvas
+				context.clearRect(0, 0, canvas.width, canvas.height);
+
+				// Scale the canvas context to match the resolution multiplier and scale ratio
+				context.scale(resolutionMultiplier * scaleRatio, resolutionMultiplier * scaleRatio);
+
+				// Draw the image on the scaled canvas context
+				context.drawImage(image, 0, 0, w, h);
+
+				canvas.toBlob(function (blob) {
+				var filesize = Math.round(blob.size / 1024) + ' KB';
+				if (callback) callback(blob, filesize);
+				});
+			};
+
+			image.src = imgsrc;
 			}
 		});
 	};
