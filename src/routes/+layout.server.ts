@@ -5,7 +5,7 @@ export const load = async ({ fetch }) => {
 				return -1;
 			}
 			if (a.make > b.make) {
-				return 1;
+		  	  	return 1;
 			}
 			if (a.model < b.model) {
 				return -1;
