@@ -30,4 +30,4 @@ const TileTypeSchema = new mongoose.Schema({
 });
 
 export const TileTypeModel =
-	mongoose.models.Tile_Types || mongoose.model('Tile_Type', TileTypeSchema);
+	mongoose.models.Tile_Type || mongoose.model('Tile_Type', TileTypeSchema);

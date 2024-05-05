@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import pkg from 'file-saver';
-	const {saveAs} = pkg;
+	import { getFontEmbedCSS } from 'html-to-image';
+	const { saveAs } = pkg;
 
 	import * as d3 from 'd3';
 
@@ -17,135 +18,143 @@
 
 		await tick();
 
-		let zoom = d3.zoom().on('zoom', handleZoom);
-
-		let clonedZoomWrapper;
-
-		function handleZoom(e) {
-			clonedZoomWrapper.attr('transform', e.transform);
-		}
-
 		let w = $screens[$currentScreenIndex].width * $screens[$currentScreenIndex].columns;
 		let h = $screens[$currentScreenIndex].height * $screens[$currentScreenIndex].rows;
 
 		let svg = d3.select('#svg');
-		let g = svg.select('g').clone(true).node();
-		let p = d3.select('#print');
 
-		p.attr('width', w);
-		p.attr('height', h);
+		let p = svg.clone(true);
 
-		p.append(() => g);
-		clonedZoomWrapper = p.select('g');
+		p.attr('width', w).attr('height', h).attr('class', '');
 
-		d3.select('#print').call(zoom.transform as any, d3.zoomIdentity.scale(1).translate(0, 0));
+		p.select('g').attr('class', '').attr('transform', '');
 
-		var svgString = getSVGString(p.node());
-		p.attr('width', 0);
-		p.attr('height', 0);
+		getFontEmbedCSS(p.node()).then((fontCss) => {
+			var svgString = getSVGString(p.node());
 
-		svgString2Image(svgString, 2 * w, 2 * h, 'png', save); // passes Blob and filesize String to the callback
+			svgString2Image(svgString, 'png', save); // passes Blob and filesize String to the callback
 
-		function save(dataBlob, filesize) {
-			saveAs(dataBlob, $screens[$currentScreenIndex].name + '.png'); // FileSaver.js function
-		}
+			function save(dataBlob, filesize) {
+				saveAs(dataBlob, $screens[$currentScreenIndex].name + '.png'); // FileSaver.js function
+			}
 
-		// Below are the functions that handle actual exporting:
-		// getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
-		function getSVGString(svgNode) {
-			svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-			var cssStyleText = getCSSStyles(svgNode);
-			// console.log(cssStyleText);
-			appendCSS(cssStyleText, svgNode);
+			// Below are the functions that handle actual exporting:
+			// getSVGString ( svgNode ) and svgString2Image( svgString, width, height, format, callback )
+			function getSVGString(svgNode) {
+				svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
+				var cssStyleText = getCSSStyles(svgNode);
+				// console.log(cssStyleText);
+				appendCSS(cssStyleText, svgNode);
+				appendCSS(fontCss, svgNode);
 
-			var serializer = new XMLSerializer();
-			var svgString = serializer.serializeToString(svgNode);
-			svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
-			svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
+				var serializer = new XMLSerializer();
+				var svgString = serializer.serializeToString(svgNode);
+				svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
+				svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix
 
-			return svgString;
+				return svgString;
 
-			function getCSSStyles(parentElement) {
-				var selectorTextArr = [];
+				function getCSSStyles(parentElement) {
+					var selectorTextArr = [];
 
-				// Add Parent element Id and Classes to the list
-				selectorTextArr.push('#' + parentElement.id);
-				for (var c = 0; c < parentElement.classList.length; c++)
-					if (!contains('.' + parentElement.classList[c], selectorTextArr))
-						selectorTextArr.push('.' + parentElement.classList[c]);
+					// Add Parent element Id and Classes to the list
+					selectorTextArr.push('#' + parentElement.id);
+					for (var c = 0; c < parentElement.classList.length; c++)
+						if (!contains('.' + parentElement.classList[c], selectorTextArr))
+							selectorTextArr.push('.' + parentElement.classList[c]);
 
-				// Add Children element Ids and Classes to the list
-				var nodes = parentElement.getElementsByTagName('*');
-				for (var i = 0; i < nodes.length; i++) {
-					var id = nodes[i].id;
-					if (!contains('#' + id, selectorTextArr)) selectorTextArr.push('#' + id);
+					// Add Children element Ids and Classes to the list
+					var nodes = parentElement.getElementsByTagName('*');
+					for (var i = 0; i < nodes.length; i++) {
+						var id = nodes[i].id;
+						if (!contains('#' + id, selectorTextArr)) selectorTextArr.push('#' + id);
 
-					var classes = nodes[i].classList;
-					for (var c = 0; c < classes.length; c++)
-						if (!contains('.' + classes[c], selectorTextArr))
-							selectorTextArr.push('.' + classes[c]);
-				}
-
-				// Extract CSS Rules
-				var extractedCSSText = '';
-				for (var i = 0; i < document.styleSheets.length; i++) {
-					var s = document.styleSheets[i];
-
-					try {
-						if (!s.cssRules) continue;
-					} catch (e) {
-						if (e.name !== 'SecurityError') throw e; // for Firefox
-						continue;
+						var classes = nodes[i].classList;
+						for (var c = 0; c < classes.length; c++)
+							if (!contains('.' + classes[c], selectorTextArr))
+								selectorTextArr.push('.' + classes[c]);
 					}
 
-					var cssRules = s.cssRules;
-					for (var r = 0; r < cssRules.length; r++) {
-						if (contains(cssRules[r].cssText, selectorTextArr))
-							extractedCSSText += cssRules[r].cssText;
+					// Extract CSS Rules
+					var extractedCSSText = '';
+					for (var i = 0; i < document.styleSheets.length; i++) {
+						var s = document.styleSheets[i];
+
+						try {
+							if (!s.cssRules) continue;
+						} catch (e) {
+							if (e.name !== 'SecurityError') throw e; // for Firefox
+							continue;
+						}
+
+						var cssRules = s.cssRules;
+						for (var r = 0; r < cssRules.length; r++) {
+							if (contains(cssRules[r].cssText, selectorTextArr))
+								extractedCSSText += cssRules[r].cssText;
+						}
+					}
+
+					return extractedCSSText;
+
+					function contains(str, arr) {
+						return arr.indexOf(str) === -1 ? false : true;
 					}
 				}
 
-				return extractedCSSText;
-
-				function contains(str, arr) {
-					return arr.indexOf(str) === -1 ? false : true;
+				function appendCSS(cssText, element) {
+					// console.log(cssText);
+					var styleElement = document.createElement('style');
+					styleElement.setAttribute('type', 'text/css');
+					styleElement.innerHTML = cssText;
+					var refNode = element.hasChildNodes() ? element.children[0] : null;
+					element.insertBefore(styleElement, refNode);
 				}
 			}
 
-			function appendCSS(cssText, element) {
-				// console.log(cssText);
-				var styleElement = document.createElement('style');
-				styleElement.setAttribute('type', 'text/css');
-				styleElement.innerHTML = cssText;
-				var refNode = element.hasChildNodes() ? element.children[0] : null;
-				element.insertBefore(styleElement, refNode);
+			function svgString2Image(svgString, format, callback) {
+				var format = format ? format : 'png';
+
+				var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
+
+				var canvas = document.createElement('canvas');
+				var context = canvas.getContext('2d');
+
+				canvas.width = 1920;
+				canvas.height = 1080;
+
+				var image = new Image();
+
+				image.onload = function () {
+					// Calculate the aspect ratio of the image
+					const imageAspectRatio = image.width / image.height;
+					const canvasAspectRatio = canvas.width / canvas.height;
+
+					let newWidth, newHeight;
+
+					// If the image's aspect ratio is greater than the canvas's aspect ratio,
+					// the image's width will be the canvas's width, and the height will be scaled accordingly.
+					if (imageAspectRatio > canvasAspectRatio) {
+						newWidth = canvas.width;
+						canvas.height = newWidth / imageAspectRatio;
+					} else {
+						// Otherwise, the image's height will be the canvas's height, and the width will be scaled accordingly.
+						newHeight = canvas.height;
+						canvas.width = newHeight * imageAspectRatio;
+					}
+
+					// Clear the canvas
+					context.clearRect(0, 0, canvas.width, canvas.height);
+					context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+					canvas.toBlob(function (blob) {
+						var filesize = Math.round(blob.size / 1024) + ' KB';
+						if (callback) callback(blob, filesize);
+					});
+				};
+
+				image.src = imgsrc;
 			}
-		}
-
-		function svgString2Image(svgString, width, height, format, callback) {
-			var format = format ? format : 'png';
-
-			var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
-
-			var canvas = document.createElement('canvas');
-			var context = canvas.getContext('2d');
-
-			canvas.width = width;
-			canvas.height = height;
-
-			var image = new Image();
-			image.onload = function () {
-				context.clearRect(0, 0, width, height);
-				context.drawImage(image, 0, 0, width, height);
-
-				canvas.toBlob(function (blob) {
-					var filesize = Math.round(blob.size / 1024) + ' KB';
-					if (callback) callback(blob, filesize);
-				});
-			};
-
-			image.src = imgsrc;
-		}
+		});
 	};
 </script>
 
@@ -159,7 +168,9 @@
 	button {
 		height: 40px;
 		width: 175px;
-		transition: background-color 0.1s, color 0.1s;
+		transition:
+			background-color 0.1s,
+			color 0.1s;
 		font-size: 1em;
 		font-weight: 700;
 	}

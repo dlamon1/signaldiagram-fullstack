@@ -20,7 +20,7 @@
 	};
 </script>
 
-<svg id="print" width="0" height="0" />
+<!-- <svg id="print" width="0" height="0" /> -->
 
 <button on:click={save} class="save" disabled={typeof $currentScreenIndex != 'number'}>Save</button>
 
@@ -28,10 +28,13 @@
 	button {
 		height: 40px;
 		width: 175px;
-		transition: background-color 0.1s, color 0.1s;
+		transition:
+			background-color 0.1s,
+			color 0.1s;
 		font-size: 1em;
 		font-weight: 700;
 	}
+
 	button:hover {
 		background-color: rgb(79, 79, 79);
 		color: rgb(255, 255, 255);
