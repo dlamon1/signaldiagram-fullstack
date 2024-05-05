@@ -129,7 +129,7 @@
   return scaleRatio;
 }
 
-		
+
 		
 		function svgString2Image(svgString, format, callback) {
 			var format = format ? format : 'png';
