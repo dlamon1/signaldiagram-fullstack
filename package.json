@@ -19,6 +19,7 @@
     "html-to-image": "^1.11.11",
     "mongodb": "^6.5.0",
     "mongoose": "^8.3.3",
+    "pica": "^9.0.1",
     "svelte-select": "^5.8.3",
     "zod": "^3.23.5"
   },
@@ -26,6 +27,7 @@
     "@sveltejs/adapter-auto": "3.2.0",
     "@sveltejs/kit": "^2.5.7",
     "@types/d3": "^7.4.3",
+    "@types/pica": "^9.0.4",
     "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.2.3",
     "svelte": "^4.2.15",

@@ -5,6 +5,7 @@
 	const { saveAs } = pkg;
 
 	import * as d3 from 'd3';
+	import pica from 'pica';
 
 	const MIRO_MAX_MP = 30000000
 
@@ -131,7 +132,7 @@
 
 
 		
-		function svgString2Image(svgString, format, callback) {
+		async function svgString2Image(svgString, format, callback) {
 			var format = format ? format : 'png';
 
 			var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString))); // Convert SVG string to data URL
@@ -146,23 +147,26 @@
 
 			var image = new Image();
 
-			image.onload = function () {
-				// Clear the canvas
-				context.clearRect(0, 0, canvas.width, canvas.height);
+			await new Promise((resolve) => {
+				image.onload = resolve;
+				image.src = imgsrc;
+			});
 
-				// Scale the canvas context to match the resolution multiplier and scale ratio
-				context.scale(resolutionMultiplier * scaleRatio, resolutionMultiplier * scaleRatio);
+			let scaledCanvas = document.createElement('canvas');
+			scaledCanvas.width = w * resolutionMultiplier * scaleRatio;
+			scaledCanvas.height = h * resolutionMultiplier * scaleRatio;
 
-				// Draw the image on the scaled canvas context
-				context.drawImage(image, 0, 0, w, h);
+			let picaInstance = pica();
+			await picaInstance.resize(image, scaledCanvas, {
+				unsharpAmount: 80,
+				unsharpRadius: 0.6,
+				unsharpThreshold: 2,
+			});
 
-				canvas.toBlob(function (blob) {
+			scaledCanvas.toBlob(function (blob) {
 				var filesize = Math.round(blob.size / 1024) + ' KB';
 				if (callback) callback(blob, filesize);
-				});
-			};
-
-			image.src = imgsrc;
+			});
 			}
 		});
 	};
