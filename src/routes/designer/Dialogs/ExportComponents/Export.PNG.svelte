@@ -7,6 +7,7 @@
   import pica from 'pica';
 
   import { mode, screens, currentScreenIndex } from '$lib/store.designer';
+  import { MIRO_MAX_MP } from '$lib/constants';
 
   const download = async () => {
     $screens.forEach((s) => {
