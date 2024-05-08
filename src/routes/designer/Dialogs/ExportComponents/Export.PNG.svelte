@@ -5,7 +5,6 @@
   const { saveAs } = pkg;
   import * as d3 from 'd3';
   import pica from 'pica';
-
   import { mode, screens, currentScreenIndex } from '$lib/store.designer';
   import { MIRO_MAX_MP } from '$lib/constants';
 
