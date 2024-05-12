@@ -239,53 +239,39 @@ export const signalDirectionButtons: Writable<DirectionButton[]> = writable([
       y: -1
     },
     horizontalOrVertical: 'vertical'
+  },
+  {
+    next: {
+      panelDirectionArray: [
+        { x: 1, y: 0, snapPointIndexes: { origin: 1, destination: 0 } },
+        { x: 0, y: 1, snapPointIndexes: { origin: 1, destination: 0 } },
+        { x: -1, y: 0, snapPointIndexes: { origin: 1, destination: 0 } },
+        { x: 0, y: 1, snapPointIndexes: { origin: 1, destination: 0 } }
+      ]
+    },
+    origin: {
+      x: -1,
+      y: -1
+    },
+    horizontalOrVertical: 'vertical',
+    transform: 'rotate(0) scale(.8)'
+  },
+  {
+    next: {
+      panelDirectionArray: [
+        { x: 1, y: 0, snapPointIndexes: { origin: 1, destination: 0 } },
+        { x: 0, y: 1, snapPointIndexes: { origin: 1, destination: 0 } },
+        { x: -1, y: 0, snapPointIndexes: { origin: 1, destination: 0 } },
+        { x: 0, y: 1, snapPointIndexes: { origin: 1, destination: 0 } }
+      ]
+    },
+    origin: {
+      x: -1,
+      y: -1
+    },
+    horizontalOrVertical: 'vertical',
+    transform: 'rotate(180) scale(.8, -.8)'
   }
-
-  //   {
-  //     points: [
-  //       { x: 1, y: 0, i: [1, 0] },
-  //       { x: 0, y: 1, i: [1, 0] },
-  //       { x: -1, y: 0, i: [1, 1] },
-  //       { x: 0, y: -1, i: [0, 1] },
-  //       { x: -1, y: 0, i: [0, 0] }
-  //     ],
-  //     initialDirection: 'vertical',
-  //     transform: 'rotate(90) scale(.8)',
-  //     pointOne: 'topright',
-  //     pointTwo: 'bottomright',
-  //     pointThree: 'bottomleft',
-  //     snapPointIndex: 0
-  //   },
-  //   {
-  //     points: [
-  //       { x: 0, y: 0, i: [1, 1], doesFlip: false }, //  initial point
-  //       { x: 1, y: 0, i: [1, 0], doesFlip: true }, //  first move
-  //       { x: 0, y: 1, i: [1, 0], doesFlip: true }, //  second move
-  //       { x: -1, y: 0, i: [1, 0], doesFlip: true }, // third move
-  //       { x: 0, y: 1, i: [1, 0], doesFlip: true } //  fourth move
-  //     ],
-  //     initialDirection: 'horizontal',
-  //     transform: 'rotate(0) scale(.8)',
-  //     pointOne: 'topleft',
-  //     pointTwo: 'topright',
-  //     pointThree: 'bottomright',
-  //     snapPointIndex: 1
-  //   },
-  //   {
-  //     points: [
-  //       { x: 1, y: 0, i: [1, 1], doesFlip: false },
-  //       { x: -1, y: 0, i: [1, 0], doesFlip: false },
-  //       { x: 0, y: 1, i: [1, 0], doesFlip: false },
-  //       { x: 1, y: 0, i: [1, 0], doesFlip: false },
-  //       { x: 0, y: 1, i: [1, 0], doesFlip: false }
-  //     ],
-  //     initialDirection: 'horizontal',
-  //     transform: 'rotate(180) scale(.8, -.8)',
-  //     pointOne: 'topright',
-  //     pointTwo: 'topleft',
-  //     pointThree: 'bottomleft',
-  //     snapPointIndex: 1
-  //   },
   //   {
   //     points: [
   //       { x: 0, y: 1, i: [0, 0], doesFlip: false },

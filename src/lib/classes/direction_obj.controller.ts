@@ -199,9 +199,6 @@ export class DirectionObjController {
 
     this.origin.snapPointIndex = snapPointIndex;
     this.origin.snapPoint = originSnapPoint;
-
-    console.log('origin snap point index', snapPointIndex);
-    console.log('origin snap point', originSnapPoint);
   }
 
   private setSelectedPanels() {
