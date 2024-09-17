@@ -167,7 +167,11 @@
 
 <svg id="print" width="0" height="0" />
 
-<button on:click={download} class="download" disabled={typeof $currentScreenIndex != 'number'}>
+<button
+  on:click={download}
+  class="download plausible-event-name=Download+PNG"
+  disabled={typeof $currentScreenIndex != 'number'}
+>
   Download .PNG
 </button>
 
