@@ -62,7 +62,7 @@
   });
 </script>
 
-<!-- <svelte:head>
+<svelte:head>
   {#if !browser}
     <script
       defer
@@ -70,7 +70,7 @@
       src="https://plausible.io/js/script.file-downloads.tagged-events."
     ></script>
   {/if}
-</svelte:head> -->
+</svelte:head>
 
 <slot />
 
