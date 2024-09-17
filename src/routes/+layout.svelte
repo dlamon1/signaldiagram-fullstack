@@ -3,6 +3,8 @@
   import type { LayoutData } from './$types';
   import {} from '$app/navigation';
 
+  import { browser } from '$app/environment';
+
   import './global.css';
   import { SvelteToast } from '@zerodevx/svelte-toast';
   import { requestedTileTypes, approvedTileTypes, tileTypes } from '$lib/store.global';
@@ -59,6 +61,16 @@
     checkBrowser();
   });
 </script>
+
+<svelte:head>
+  {#if !browser}
+    <script
+      defer
+      data-domain="signaldiagram.com"
+      src="https://plausible.io/js/script.file-downloads.tagged-events."
+    ></script>
+  {/if}
+</svelte:head>
 
 <slot />
 
