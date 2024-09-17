@@ -3,15 +3,18 @@
 
 import type { TileType } from '$lib/types';
 import type { Model } from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 // and what to do when importing types
 declare global {
-	namespace App {
-		interface Locals {
-			TileTypeModel: Model<TileType>;
-		}
-		// interface PageData {}
-		// interface Error {}
-		// interface Platform {}
-	}
+  namespace App {
+    interface Locals {
+      TileTypeModel: Model<TileType>;
+    }
+    // interface PageData {}
+    // interface Error {}
+    // interface Platform {}
+  }
 }
